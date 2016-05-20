@@ -12,7 +12,7 @@ android:
     # - sys-img-x86-android-17
 
   licenses:
-   - 'android-sdk-license-.+'
+    - 'android-sdk-license-.+'
 
 env:
   global:
@@ -21,12 +21,12 @@ env:
 
 # Emulator Management: Create, Start and Wait
 before_script:
-  - echo no | android create avd --force -n test -t android-23 --abi armeabi-v7a
-  - emulator -avd test -no-skin -no-audio -no-window &
-  - android-wait-for-emulator
-  - adb shell input keyevent 82 &
+    - echo no | android create avd --force -n test -t android-23 --abi armeabi-v7a
+    - emulator -avd test -no-skin -no-audio -no-window &
+    - android-wait-for-emulator
+    - adb shell input keyevent 82 &
 before_install:
     - chmod +x gradlew
 script:
-  - android list target
-   - ./gradlew build connectedCheck
+    - android list target
+    - ./gradlew build connectedCheck
