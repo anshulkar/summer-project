@@ -1,0 +1,6 @@
+#remove everything except the db files 
+lib/*.jar
+certificates/
+start
+start.bat
+._*
