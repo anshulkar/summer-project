@@ -10,7 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.support.design.widget.TextInputEditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +26,7 @@ public class AddProdContentFragment extends Fragment {
     private String codeFormat;
     private String codeContent="";
 
-    EditText name,details;
+    TextInputEditText name,details;
     TextView barcode;
     private OnAddProdDataListener mListener;
 
@@ -43,8 +43,8 @@ public class AddProdContentFragment extends Fragment {
 
         barcode = (TextView) view.findViewById(R.id.prod_barcode);
 
-        name = (EditText) view.findViewById(R.id.prod_name);
-        details = (EditText) view.findViewById(R.id.prod_details);
+        name = (TextInputEditText) view.findViewById(R.id.prod_name);
+        details = (TextInputEditText) view.findViewById(R.id.prod_details);
 
 
         barcode.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +72,6 @@ public class AddProdContentFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-
     }
 
     public boolean submitButtonPressed(){

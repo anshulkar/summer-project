@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.support.design.widget.TextInputEditText;
 
 
 /**
@@ -16,7 +16,7 @@ public class ProdDetailsFragment extends Fragment {
 
     public static String LOCATION="location",PROD_NAME="product name",PROD_DETAILS="product details",BARCODE="barcode",LONGITUDE="longitude",LATITUDE="latitude";
 
-    EditText barcode,name,details,location,longitude,latitude;
+    TextInputEditText barcode,name,details,location,longitude,latitude;
     public ProdDetailsFragment() {
         // Required empty public constructor
     }
@@ -30,12 +30,12 @@ public class ProdDetailsFragment extends Fragment {
 
         Bundle args = this.getArguments();
 
-        barcode = (EditText) view.findViewById(R.id.barcode);
-        name = (EditText) view.findViewById(R.id.name);
-        details = (EditText) view.findViewById(R.id.details);
-        location = (EditText) view.findViewById(R.id.location);
-        longitude = (EditText) view.findViewById(R.id.longitude);
-        latitude = (EditText) view.findViewById(R.id.latitude);
+        barcode = (TextInputEditText) view.findViewById(R.id.barcode);
+        name = (TextInputEditText) view.findViewById(R.id.name);
+        details = (TextInputEditText) view.findViewById(R.id.details);
+        location = (TextInputEditText) view.findViewById(R.id.location);
+        longitude = (TextInputEditText) view.findViewById(R.id.longitude);
+        latitude = (TextInputEditText) view.findViewById(R.id.latitude);
 
 
         barcode.setText(args.getString(BARCODE));

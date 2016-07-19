@@ -3,7 +3,6 @@ package summer.utk.com.summer;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,6 +31,7 @@ public class ScanFragment extends Fragment{
     private TextView formatTxt, contentTxt,locationTxt;
     private Button scanButton,addProdButton;
     private OnBarcodeScanResultListener mListener;
+    private ProgressDialog pdia;
 
     public ScanFragment() {
         // Required empty public constructor
@@ -90,7 +90,8 @@ public class ScanFragment extends Fragment{
     public void onDetach() {
         super.onDetach();
         mListener = null;
-
+        if(pdia!= null)
+            pdia.dismiss();
     }
 
     /**
@@ -153,8 +154,6 @@ public class ScanFragment extends Fragment{
 
         //three methods get called, first preExecute, then do in background, and once do
         //in back ground is completed, the onPost execute method will be called.//TODO:incorporate on progresssdialog cancelled method in all asynctask
-
-        ProgressDialog pdia;
 
         @Override
         protected void onPreExecute() {

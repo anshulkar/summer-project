@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
-import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
     private static final int REQUEST_FINE_LOCATION=0;
     private LocationGooglePlayServicesProvider provider;
     private String revGeocodededLocation;
+    private static long back_pressed;//keeps track of the time when back button was pressed required for double-tap-in-2sec back button to exit app
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,30 +47,36 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        frag.onActivityResult(requestCode, resultCode, intent);
+        if (frag instanceof ScanFragment) frag.onActivityResult(requestCode, resultCode, intent);
     }
 
-    private static long back_pressed;
 
     @Override
-    public void onDestroy(){
-        super.onDestroy();
+    public void onStop() {
+        super.onStop();
         stopLocation();
     }
 
     @Override
     public void onBackPressed() {
-        if (back_pressed + 2000 > System.currentTimeMillis()){
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            startActivity(intent);
-            finish();
-            super.onBackPressed();
+        if(frag instanceof ScanFragment){
+            if (back_pressed + 2000 > System.currentTimeMillis()){
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                startActivity(intent);
+                finish();
+                super.onBackPressed();
+            }
+            else
+                Toast.makeText(getBaseContext(), "Press again to exit the Application!", Toast.LENGTH_SHORT).show();
+            back_pressed = System.currentTimeMillis();
         }
-        else
-            Toast.makeText(getBaseContext(), "Press again to exit !", Toast.LENGTH_SHORT).show();
-        back_pressed = System.currentTimeMillis();
+        else{
+            frag = new ScanFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag).commit();
+
+        }
     }
 
     @Override

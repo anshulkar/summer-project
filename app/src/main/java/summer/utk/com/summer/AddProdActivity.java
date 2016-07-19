@@ -15,12 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 import com.varun.baasbox.utility;
 
 import java.util.ArrayList;
@@ -39,6 +34,7 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
     private LocationGooglePlayServicesProvider provider;
     private String revGeocodededLocation,longitude,latitude;
     private String barcode,prod_name,prod_details=null;
+    private ProgressDialog pdia;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +89,13 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        stopLocation();
+        if(pdia!= null)
+            pdia.dismiss();
+    }
+    @Override
     public void onBackPressed(){
 
 
@@ -114,12 +117,15 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        frag.onActivityResult(requestCode, resultCode, intent);
+        if (frag instanceof AddProdContentFragment)frag.onActivityResult(requestCode, resultCode, intent);
     }
 
     @Override
     public void onAddProdData(String barcode, String prodName, String prodDetails) {
 
+        this.barcode=barcode;
+        prod_name = prodName;
+        prod_details = prodDetails;
     }
 
     /***Location stuff**/
@@ -179,8 +185,6 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
 
         //three methods get called, first preExecute, then do in background, and once do
         //in back ground is completed, the onPost execute method will be called.//TODO:incorporate on progresssdialog cancelled method in all asynctask
-
-        ProgressDialog pdia;
 
         @Override
         protected void onPreExecute() {
