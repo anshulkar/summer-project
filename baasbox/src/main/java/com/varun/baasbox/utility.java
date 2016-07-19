@@ -1,4 +1,4 @@
-package com.example.varun.baasboxapp;
+package com.varun.baasbox;
 
 import android.content.Context;
 import android.os.Handler;
@@ -8,6 +8,8 @@ import android.widget.Toast;
 import com.baasbox.android.*;
 import com.baasbox.android.json.JsonObject;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class utility {
@@ -21,7 +23,7 @@ public class utility {
     static boolean result=false;
 
     //Call this in onCreate method of the very first activity of the app
-    void init(Context appContext){
+    public void init(Context appContext){
         BaasBox.Builder b =
                 new BaasBox.Builder(appContext);
         client = b.setApiDomain("40.121.94.107")
@@ -30,7 +32,7 @@ public class utility {
     }
 
     //For checking whether the barcode exists in the db
-    boolean checkProduct(String s)
+    public boolean checkProduct(String s)
     {
 
         final BaasQuery PREPARED_QUERY =
@@ -136,5 +138,24 @@ public class utility {
         });
 
 
+    }
+
+    /***Unimplemented methods TODO: implement them*/
+    public String getProdName(String barcode){
+        return "Product name";
+    }
+
+    public String getProdDetails(String barcode){
+        return "Product details";
+    }
+    public Boolean addProd(String barcode,String prod_name, String prod_details, String longitude, String latitude){
+        /**Add product to DB*/
+        return false;
+    }
+    public ArrayList<String> getAllProdNames(){
+        /**Fetch list of all names of products in DB*/
+        ArrayList<String> str_arr = new ArrayList<>();
+        str_arr.add("prod_1_name");
+        return str_arr;
     }
 }

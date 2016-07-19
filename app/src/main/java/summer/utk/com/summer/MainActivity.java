@@ -1,24 +1,21 @@
 package summer.utk.com.summer;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
+import com.varun.baasbox.utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,87 +25,93 @@ import io.nlopez.smartlocation.OnReverseGeocodingListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider;
 
-public class MainActivity extends AppCompatActivity implements OnLocationUpdatedListener {
-    private String codeFormat,codeContent;
-    private TextView formatTxt, contentTxt,locationTxt;
-    private Button scanBut;
+public class MainActivity extends AppCompatActivity implements ScanFragment.OnBarcodeScanResultListener , OnLocationUpdatedListener {
 
+    private Fragment frag;
+    private FragmentTransaction fragTrans;
     private static final int REQUEST_FINE_LOCATION=0;
     private LocationGooglePlayServicesProvider provider;
+    private String revGeocodededLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        formatTxt = (TextView)findViewById(R.id.scan_format);
-        contentTxt = (TextView)findViewById(R.id.scan_content);
-        locationTxt = (TextView) findViewById(R.id.location_text);
-        startLocation();
-        scanBut = (Button)findViewById(R.id.scan_button);
-        scanBut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                scanNow(v);//TODO: make another method which refreshes the location whenever the button is pressed
-            }
-        });
-
         loadPermissions(Manifest.permission.ACCESS_FINE_LOCATION,REQUEST_FINE_LOCATION);
-    }
 
-    public void scanNow(View view){
-        IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setCaptureActivity(ScanActivity.class);
-        integrator.setOrientationLocked(false);
-        integrator.initiateScan();
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
-        integrator.setPrompt("Scan a QR code or Barcode");/*
-        integrator.setResultDisplayDuration(0);
-        integrator.setWide();  // Wide scanning rectangle, may work better for 1D barcodes*/
-        integrator.setCameraId(0);  // Use a specific camera of the device
-        integrator.initiateScan();
-    }
+        startLocation();
 
-    /**
-     * function handle scan result
-     * @param requestCode
-     * @param resultCode
-     * @param intent
-     */
+        frag = new ScanFragment();
+        fragTrans = getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag);
+        fragTrans.commit();
+    }
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-//retrieve scan result
-        IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-
-        if (scanningResult != null) {
-//we have a result
-            String scanContent = scanningResult.getContents();
-            String scanFormat = scanningResult.getFormatName();
-
-// display it on screen
-            formatTxt.setText("FORMAT: " + scanFormat);
-            contentTxt.setText("CONTENT: " + scanContent);
-            HandleScan handlescanresults = new HandleScan();
-            //handlescanresults.execute("well pass something ");//the gui cant get updated when the async task is running
-
-        }else{
-            Toast toast = Toast.makeText(getApplicationContext(),"No scan data received!", Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        frag.onActivityResult(requestCode, resultCode, intent);
     }
+
+    private static long back_pressed;
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        stopLocation();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (back_pressed + 2000 > System.currentTimeMillis()){
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            startActivity(intent);
+            finish();
+            super.onBackPressed();
+        }
+        else
+            Toast.makeText(getBaseContext(), "Press again to exit !", Toast.LENGTH_SHORT).show();
+        back_pressed = System.currentTimeMillis();
+    }
+
+    @Override
+    public void onScannedBarcode(String barcode, Boolean DBmatch) {
+
+        if(DBmatch){
+            utility u = new utility();
+
+            Fragment frag = new ProdDetailsFragment();
+            Bundle bundle =  new Bundle();
+            bundle.putString(ProdDetailsFragment.BARCODE,barcode);
+            bundle.putString(ProdDetailsFragment.LOCATION,revGeocodededLocation);
+            bundle.putString(ProdDetailsFragment.PROD_NAME,u.getProdName(barcode));
+            bundle.putString(ProdDetailsFragment.PROD_DETAILS,u.getProdDetails(barcode));
+            frag.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag).commit();
+
+        }
+        else {
+            Fragment frag = new UnrecogProdFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag).commit();
+        }
+
+    }
+
+
+    /***Location stuff**/
 
     private void startLocation() {
 
         provider = new LocationGooglePlayServicesProvider();
         provider.setCheckLocationSettings(true);
 
-        SmartLocation smartLocation = new SmartLocation.Builder(this).logging(true).build();
+        SmartLocation smartLocation = new SmartLocation.Builder(MainActivity.this).logging(true).build();
 
         smartLocation.location(provider).start(this);
 
     }
 
     private void stopLocation() {
-        SmartLocation.with(this).location().stop();
+        SmartLocation.with(MainActivity.this).location().stop();
     }
 
     private void showLocation(Location location) {
@@ -116,10 +119,10 @@ public class MainActivity extends AppCompatActivity implements OnLocationUpdated
             final String text = String.format("Latitude %.6f, Longitude %.6f",
                     location.getLatitude(),
                     location.getLongitude());
-            locationTxt.setText(text);
+            revGeocodededLocation = text;
 
             // We are going to get the address for the current position
-            SmartLocation.with(this).geocoding().reverse(location, new OnReverseGeocodingListener() {
+            SmartLocation.with(MainActivity.this).geocoding().reverse(location, new OnReverseGeocodingListener() {
                 @Override
                 public void onAddressResolved(Location original, List<Address> results) {
                     if (results.size() > 0) {
@@ -131,12 +134,12 @@ public class MainActivity extends AppCompatActivity implements OnLocationUpdated
                             addressElements.add(result.getAddressLine(i));
                         }
                         builder.append(TextUtils.join(", ", addressElements));
-                        locationTxt.setText(builder.toString());
+                        revGeocodededLocation = text;
                     }
                 }
             });
         } else {
-            locationTxt.setText("Null location");
+            Toast.makeText(MainActivity.this,"Can't get location data!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -146,37 +149,12 @@ public class MainActivity extends AppCompatActivity implements OnLocationUpdated
         stopLocation();
     }
 
-    class HandleScan extends AsyncTask<String,Void,Integer> {
-
-        //three methods get called, first preExecute, then do in background, and once do
-        //in back ground is completed, the onPost execute method will be called.//TODO:incorporate on progresssdialog cancelled method in all asynctask
-
-        ProgressDialog pdia;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pdia = new ProgressDialog(MainActivity.this);
-            pdia.setMessage("Logging In ...");
-            pdia.show();
-        }
-
-        @Override
-        protected Integer doInBackground(String... str) {
-            return null;
-        }
-
-        protected void onPostExecute(Integer t) {
-            pdia.dismiss();
-        }
-
-
-    }
+    /**Permission stuff**/
 
     private void loadPermissions(String perm,int requestCode) {
-        if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, perm)) {
-                ActivityCompat.requestPermissions(this, new String[]{perm},requestCode);
+        if (ContextCompat.checkSelfPermission(MainActivity.this, perm) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, perm)) {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{perm},requestCode);
             }
         }
     }

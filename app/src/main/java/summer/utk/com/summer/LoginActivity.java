@@ -5,15 +5,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
-
-import org.json.JSONObject;
-
-import jp.wasabeef.blurry.Blurry;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -81,8 +74,9 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPostExecute(Integer t) {
 
             pdia.dismiss();
-            Intent i = new Intent(LoginActivity.this,MainActivity.class);
+            Intent i = new Intent(LoginActivity.this,AddProdActivity.class);
             startActivity(i);
+            finish();
         }
 
 
