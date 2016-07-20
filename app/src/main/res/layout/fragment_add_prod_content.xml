@@ -29,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:paddingTop="20dp"
                 android:id="@+id/prod_barcode"
-                android:text="Barcode"
+                android:text="Tap to add barcode Barcode"
                 style="@style/AppTheme"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:singleLine="true"

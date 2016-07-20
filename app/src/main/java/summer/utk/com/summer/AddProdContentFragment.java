@@ -77,7 +77,7 @@ public class AddProdContentFragment extends Fragment {
     public boolean submitButtonPressed(){
         TextInputLayout name_layout = (TextInputLayout)name.getParent();
         if(codeContent.equals("")){
-            barcode.setText("Please scan a barcode");
+            barcode.setText("Please tap to add a barcode");
             barcode.setTextColor(Color.parseColor("red"));
             return false;
         }
@@ -88,17 +88,6 @@ public class AddProdContentFragment extends Fragment {
         sendProdDataToActivity(codeContent,name.getText().toString(),details.getText().toString());
         return true;
     }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnAddProdDataListener {
         // TODO: Update argument type and name
         void onAddProdData(String barcode, String prodName, String prodDetails);
@@ -140,7 +129,7 @@ public class AddProdContentFragment extends Fragment {
             codeFormat = scanningResult.getFormatName();
 
 // display it on screen
-            barcode.setText("FORMAT: " + codeFormat);
+            barcode.setText("Barcode: " + codeContent);
             barcode.setTextColor(Color.parseColor("black"));
             //contentTxt.setText("CONTENT: " + codeContent);
             //HandleScan handlescanresults = new HandleScan();
