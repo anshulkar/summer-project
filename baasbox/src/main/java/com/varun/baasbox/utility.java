@@ -21,7 +21,7 @@ public class utility {
     static String Username="",Pwd="";
     static BaasUser user;
     static boolean result=false;
-
+    static String prodName="",prodDetails="";
     //Call this in onCreate method of the very first activity of the app
     public void init(Context appContext){
         BaasBox.Builder b =
@@ -29,6 +29,8 @@ public class utility {
         client = b.setApiDomain("40.121.94.107")
                 .setAppCode("1234567890")
                 .init();
+        login("admin","admin");
+        Log.d("Init Method","Called");
     }
 
     //For checking whether the barcode exists in the db
@@ -38,7 +40,7 @@ public class utility {
         final BaasQuery PREPARED_QUERY =
                 BaasQuery.builder()
                         .collection("sample")
-                        .where("jar ='"+s+"' and _author='admin'")
+                        .where("Barcode ='"+s+"' and _author='admin'")
                         .build();
         PREPARED_QUERY.query(new BaasHandler<List<JsonObject>>(){
             @Override
@@ -48,8 +50,19 @@ public class utility {
                     //Toast.makeText(getApplicationContext(),res.value().toString(),Toast.LENGTH_LONG).show();
                     //JsonObject obj=res.value();
                     List<JsonObject> objlist=res.value();
-                    result=true;
+                    if(objlist.size()>0) {
+                        JsonObject obj = objlist.get(0);
+                        prodName=obj.getString("Product_Name");
+                        prodDetails=obj.getString("Product_Details");
+                    }
+                    else
+                    {
+                        prodName="";
+                        prodDetails="";
+                    }
+
                     Log.d("Product Check","No. of items "+objlist.size());
+
                 }
                 else {
                     result=false;
@@ -65,13 +78,13 @@ public class utility {
 
 
     //To insert new Product
-    public boolean insert(String name,String latitude,String longitude)
+    public boolean addProd(String barcode,String name,String details,String longitude,String latitude)
     {
 
 
         BaasDocument doc = new BaasDocument("sample");
 
-        doc.put("Product_Name",name).put("Latitude",latitude).put("Longitude",longitude);
+        doc.put("Barcode",barcode).put("Product_Name",name).put("Product_Details",details).put("Latitude",latitude).put("Longitude",longitude);
         Log.d("Insert Function",doc.toJson().toString());
         doc.save(new BaasHandler<BaasDocument>() {
             @Override
@@ -142,16 +155,14 @@ public class utility {
 
     /***Unimplemented methods TODO: implement them*/
     public String getProdName(String barcode){
-        return "Product name";
+
+        return prodName;
     }
 
     public String getProdDetails(String barcode){
-        return "Product details";
+        return prodDetails;
     }
-    public Boolean addProd(String barcode,String prod_name, String prod_details, String longitude, String latitude){
-        /**Add product to DB*/
-        return false;
-    }
+
     public ArrayList<String> getAllProdNames(){
         /**Fetch list of all names of products in DB*/
         ArrayList<String> str_arr = new ArrayList<>();
