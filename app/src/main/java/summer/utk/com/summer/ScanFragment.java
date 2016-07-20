@@ -6,10 +6,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +30,7 @@ public class ScanFragment extends Fragment{
 
     private String codeFormat,codeContent;
     private TextView formatTxt, contentTxt,locationTxt;
-    private Button scanButton,addProdButton;
+    private ImageView scanButton;
     private OnBarcodeScanResultListener mListener;
     private ProgressDialog pdia;
 
@@ -47,7 +48,7 @@ public class ScanFragment extends Fragment{
         contentTxt = (TextView)view.findViewById(R.id.scan_content);
         locationTxt = (TextView) view.findViewById(R.id.location_text);
 
-        scanButton = (Button)view.findViewById(R.id.scan_button);
+        scanButton = (ImageView)view.findViewById(R.id.scan_button);
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,14 +56,6 @@ public class ScanFragment extends Fragment{
             }
         });
 
-        addProdButton = (Button)view.findViewById(R.id.add_prod_button);
-        addProdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(),LoginActivity.class);
-                startActivity(i);
-            }
-        });
 
 
         return view;
@@ -133,7 +126,7 @@ public class ScanFragment extends Fragment{
 //retrieve scan result
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 
-        if (scanningResult != null) {
+        if (scanningResult != null && scanningResult.getContents()!=null) {
 //we have a result
             codeContent = scanningResult.getContents();
             codeFormat = scanningResult.getFormatName();
@@ -142,7 +135,7 @@ public class ScanFragment extends Fragment{
             formatTxt.setText("FORMAT: " + codeFormat);
             contentTxt.setText("CONTENT: " + codeContent);
             HandleScan handlescanresults = new HandleScan();
-            handlescanresults.execute("noice");//the gui cant get updated when the async task is running
+            handlescanresults.execute();//the gui cant get updated when the async task is running
 
         }else{
             Toast toast = Toast.makeText(getActivity(),"No scan data received!", Toast.LENGTH_SHORT);
@@ -158,6 +151,7 @@ public class ScanFragment extends Fragment{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
             pdia = new ProgressDialog(getActivity());
             pdia.setMessage("Connecting to server ...");
             pdia.show();
@@ -170,8 +164,9 @@ public class ScanFragment extends Fragment{
         }
 
         protected void onPostExecute(Boolean t) {
+            Log.d("gh","hgh");
             pdia.dismiss();
-            sendBarcodeToActivity(codeContent,t);
+            sendBarcodeToActivity(codeContent,false);
 
         }
 

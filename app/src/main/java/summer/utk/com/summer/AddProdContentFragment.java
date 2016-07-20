@@ -141,7 +141,7 @@ public class AddProdContentFragment extends Fragment {
 
 // display it on screen
             barcode.setText("FORMAT: " + codeFormat);
-            barcode.setTextColor(Color.parseColor("white"));
+            barcode.setTextColor(Color.parseColor("black"));
             //contentTxt.setText("CONTENT: " + codeContent);
             //HandleScan handlescanresults = new HandleScan();
             //handlescanresults.execute("noice");//the gui cant get updated when the async task is running

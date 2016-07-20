@@ -30,17 +30,20 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
 
 
     private Fragment frag;
+    private Toolbar toolbar;
     private FragmentTransaction fragTrans;
     private LocationGooglePlayServicesProvider provider;
     private String revGeocodededLocation,longitude,latitude;
     private String barcode,prod_name,prod_details=null;
     private ProgressDialog pdia;
+    private String TITLE_ADD_PROD="Add product",TITLE_PROD_DETAILS="Product details";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_prod);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(TITLE_ADD_PROD);
         setSupportActionBar(toolbar);
 
         startLocation();
@@ -61,6 +64,7 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
                     else{
 
                         frag = new ProdDetailsFragment();
+                        toolbar.setTitle(TITLE_PROD_DETAILS);
                         Bundle args = new Bundle();
                         args.putString(ProdDetailsFragment.BARCODE, barcode );
                         args.putString(ProdDetailsFragment.PROD_NAME, prod_name );
@@ -109,6 +113,7 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
 
             getSupportFragmentManager().popBackStack();
             frag = new AddProdContentFragment();
+            toolbar.setTitle(TITLE_ADD_PROD);
             fragTrans = getSupportFragmentManager().beginTransaction().replace(R.id.add_prod_activity_fragment,frag);
             fragTrans.commit();
 
@@ -203,16 +208,18 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
         protected void onPostExecute(Boolean t) {
             pdia.dismiss();
             if(t){
-                Toast.makeText(AddProdActivity.this,"Product added to DB",Toast.LENGTH_SHORT);
+                Toast.makeText(AddProdActivity.this,"Product added to DB",Toast.LENGTH_SHORT).show();
                 getSupportFragmentManager().popBackStack();
                 frag = new AddProdContentFragment();
+                toolbar.setTitle(TITLE_ADD_PROD);
                 fragTrans = getSupportFragmentManager().beginTransaction().replace(R.id.add_prod_activity_fragment,frag);
                 fragTrans.commit();
             }
             else{
-                Toast.makeText(AddProdActivity.this,"Product can't be added",Toast.LENGTH_SHORT);//TODO: replace toast wid success and unsuccessful addition frags
+                Toast.makeText(AddProdActivity.this,"Product can't be added",Toast.LENGTH_SHORT).show();//TODO: replace toast wid success and unsuccessful addition frags
                 getSupportFragmentManager().popBackStack();
                 frag = new AddProdContentFragment();
+                toolbar.setTitle(TITLE_ADD_PROD);
                 fragTrans = getSupportFragmentManager().beginTransaction().replace(R.id.add_prod_activity_fragment,frag);
                 fragTrans.commit();
             }

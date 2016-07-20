@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="32dp"
+        android:height="32dp"
+        android:viewportWidth="32.0"
+        android:viewportHeight="32.0">
+    <path
+        android:name="verti"
+        android:strokeColor="#ffffff"
+        android:strokeWidth="3"
+        android:pathData="M16,5 L16,27" />
+    <path
+        android:name="horiz"
+        android:strokeColor="#ffffff"
+        android:strokeWidth="3"
+        android:pathData="M5,16 L27,16" />
+</vector>

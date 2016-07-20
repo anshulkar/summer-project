@@ -26,25 +26,16 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // Prepare the View for the animation
+        /*// Prepare the View for the animation
         View view = findViewById(R.id.login_form_container);
-        View owlogo = findViewById(R.id.ow_logo);
-        View overlay = findViewById(R.id.overlay);
-        view.setAlpha(0.0f);
-        overlay.setAlpha(0.0f);
 
 // Start the animation
         int ANIM_DURATION = 2500;
-        owlogo.setTranslationY(-500f);
-        overlay.animate()
-                .setDuration(ANIM_DURATION / 2)
-                .alpha(0.7f);
-        owlogo.animate()
-                .setDuration(ANIM_DURATION + 100)
-                .translationY(0);
+        view.setTranslationY(-50f);
         view.animate()
-                .setDuration(ANIM_DURATION)
-                .alpha(1.0f);
+                .setDuration(ANIM_DURATION + 100)
+                .translationY(0)
+                .alpha(1.0f);*/
 
 
 

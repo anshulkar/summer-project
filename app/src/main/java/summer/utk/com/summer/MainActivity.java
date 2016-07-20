@@ -2,18 +2,24 @@ package summer.utk.com.summer;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.varun.baasbox.utility;
 
 import java.util.ArrayList;
@@ -26,25 +32,73 @@ import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProv
 
 public class MainActivity extends AppCompatActivity implements ScanFragment.OnBarcodeScanResultListener , OnLocationUpdatedListener {
 
+    private SharedPreferences prefs;
     private Fragment frag;
+    private Toolbar toolbar;
+    private Boolean search_menu_item,addProd_menu_item;
+    private MaterialSearchView searchView;
     private FragmentTransaction fragTrans;
     private static final int REQUEST_FINE_LOCATION=0;
     private LocationGooglePlayServicesProvider provider;
     private String revGeocodededLocation;
+    private String TITLE_SCAN="Scan Barcode",TITLE_PROD_DETAILS="Product Details",TITLE_SEARCH_PRODUCT="Search product";
     private static long back_pressed;//keeps track of the time when back button was pressed required for double-tap-in-2sec back button to exit app
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        /*if(prefs.getBoolean(IntroActivity.FIRST_RUN,true)){
+            Intent i = new Intent(MainActivity.this,IntroActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+            finish();
+        }*/
         setContentView(R.layout.activity_main);
         loadPermissions(Manifest.permission.ACCESS_FINE_LOCATION,REQUEST_FINE_LOCATION);
 
         startLocation();
+        toolbar = (Toolbar) findViewById(R.id.main_act_toolbar);
+        toolbar.setTitle(TITLE_SCAN);
+        search_menu_item=false;
+        addProd_menu_item=true;
+        setSupportActionBar(toolbar);
+
+        searchView = (MaterialSearchView) findViewById(R.id.search_view);
+
+        utility u =new utility();
+        u.init(getApplicationContext());
 
         frag = new ScanFragment();
         fragTrans = getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag);
         fragTrans.commit();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main_toolbar, menu);
+
+        MenuItem item = menu.findItem(R.id.menu_searchView);
+        item.setVisible(search_menu_item);
+        searchView.setMenuItem(item);
+        item = menu.findItem(R.id.menu_addProd);
+        item.setVisible(addProd_menu_item);
+
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_addProd:
+                Intent i = new Intent(MainActivity.this,LoginActivity.class);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (frag instanceof ScanFragment) frag.onActivityResult(requestCode, resultCode, intent);
@@ -72,10 +126,22 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
                 Toast.makeText(getBaseContext(), "Press again to exit the Application!", Toast.LENGTH_SHORT).show();
             back_pressed = System.currentTimeMillis();
         }
+        else if(frag instanceof UnrecogProdFragment){
+            if (searchView.isSearchOpen()) {
+                searchView.closeSearch();
+            } else {
+                frag = new ScanFragment();
+                toolbar.setTitle(TITLE_SCAN);
+                search_menu_item=false;
+                addProd_menu_item=true;
+                invalidateOptionsMenu();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag).commit();
+            }
+        }
         else{
             frag = new ScanFragment();
+            toolbar.setTitle(TITLE_SCAN);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag).commit();
-
         }
     }
 
@@ -85,7 +151,8 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
         if(DBmatch){
             utility u = new utility();
 
-            Fragment frag = new ProdDetailsFragment();
+            frag = new ProdDetailsFragment();
+            toolbar.setTitle(TITLE_PROD_DETAILS);
             Bundle bundle =  new Bundle();
             bundle.putString(ProdDetailsFragment.BARCODE,barcode);
             bundle.putString(ProdDetailsFragment.LOCATION,revGeocodededLocation);
@@ -96,7 +163,11 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
 
         }
         else {
-            Fragment frag = new UnrecogProdFragment();
+            frag = new UnrecogProdFragment();
+            toolbar.setTitle(TITLE_SEARCH_PRODUCT);
+            search_menu_item=true;
+            addProd_menu_item=false;
+            invalidateOptionsMenu();
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag).commit();
         }
 
