@@ -29,7 +29,7 @@ public class StringsDataAdapter extends RecyclerView.Adapter<StringsDataAdapter.
     public void onBindViewHolder(MyViewHolder holder, int position) {
         String name = data.get(position);
         holder.name.setText(name);
-        if(position+1 == data.size())holder.divider.setVisibility(View.GONE);
+        //if(position+1 == data.size())holder.divider.setVisibility(View.GONE);
     }
 
     @Override
@@ -39,12 +39,12 @@ public class StringsDataAdapter extends RecyclerView.Adapter<StringsDataAdapter.
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
-        public View divider;
+        //public View divider;
 
         public MyViewHolder(View view) {
             super(view);
             name = (TextView) view.findViewById(R.id.prod_name_row);
-            divider = (View) view.findViewById(R.id.row_item_divider);
+            //divider = (View) view.findViewById(R.id.row_item_divider);
         }
     }
 }

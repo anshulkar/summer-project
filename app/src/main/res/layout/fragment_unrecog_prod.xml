@@ -1,13 +1,26 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="summer.utk.com.summer.UnrecogProdFragment">
+    tools:context="summer.utk.com.summer.UnrecogProdFragment"
+    android:orientation="vertical">
 
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:textAlignment="center"
+        android:text="The barcode you scanned doesn't exist in our Database.\nFollowing is a list of all products in our DB if you find your product you may be having a FAKE product."
+        android:background="@color/colorAccent"
+        android:textColor="#fff"
+        android:padding="15dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/unrecogProdRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:scrollbars="vertical" />
 
-</FrameLayout>
+</LinearLayout>
