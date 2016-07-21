@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,7 +121,9 @@ public class UnrecogProdFragment extends Fragment {
         @Override
         protected Boolean doInBackground(String... str) {
             utility u = new utility();
-            prod_names = u.getAllProdNames();
+            //prod_names = u.getAllProdNames(); This cant be done as this changes reference of prod_names causing the adapter to lose the reference.
+            prod_names.addAll(u.getAllProdNames());
+            Log.d("unrecProd",""+prod_names.size());
             return true;
         }
 

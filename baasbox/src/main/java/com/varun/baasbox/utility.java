@@ -181,6 +181,7 @@ public class utility {
         return prodDetails;
     }
 
+    boolean executor2=false;
     public ArrayList<String> getAllProdNames(){
         /**Fetch list of all names of products in DB*/
         final ArrayList<String> str_arr = new ArrayList<>();
@@ -195,12 +196,15 @@ public class utility {
                                 str_arr.add(doc.getString("Product_Name"));
                                 Log.d("LOG","Doc: "+doc.getString("Product_Name"));
                             }
+                            executor2 = true;
                         } else {
+                            executor2=true;
                             Log.e("LOG","Error",res.error());
                         }
                     }
                 });
 
+        while(!executor2){}
         return str_arr;
     }
 }
