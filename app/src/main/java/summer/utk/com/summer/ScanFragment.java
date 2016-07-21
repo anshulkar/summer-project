@@ -166,7 +166,7 @@ public class ScanFragment extends Fragment{
         protected void onPostExecute(Boolean t) {
             Log.d("gh","hgh");
             pdia.dismiss();
-            sendBarcodeToActivity(codeContent,false);
+            sendBarcodeToActivity(codeContent,t);
 
         }
 

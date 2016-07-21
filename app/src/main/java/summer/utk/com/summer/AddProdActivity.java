@@ -163,14 +163,13 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
                 public void onAddressResolved(Location original, List<Address> results) {
                     if (results.size() > 0) {
                         Address result = results.get(0);
-                        StringBuilder builder = new StringBuilder(text);
-                        builder.append("\n[Reverse Geocoding] ");
+                        StringBuilder builder = new StringBuilder();
                         List<String> addressElements = new ArrayList<>();
                         for (int i = 0; i <= result.getMaxAddressLineIndex(); i++) {
                             addressElements.add(result.getAddressLine(i));
                         }
                         builder.append(TextUtils.join(", ", addressElements));
-                        revGeocodededLocation = text;
+                        revGeocodededLocation = builder.toString();
 
                     }
                 }

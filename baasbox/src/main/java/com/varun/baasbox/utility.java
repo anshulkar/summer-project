@@ -79,9 +79,9 @@ public class utility {
             }
         });
 
-//        while(!executor){
-//
-//        }
+        while(!executor){
+
+        }
         executor=false;
         return result;
     }
