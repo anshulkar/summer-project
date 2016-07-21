@@ -164,12 +164,12 @@ public class ScanFragment extends Fragment{
                 return u.checkProduct(codeContent);
             }
             catch(Exception e){
+                Log.e("ScanFrag","Checking for product in DB", e);
                 return false;//Please do something nice if possible
             }
         }
 
         protected void onPostExecute(Boolean t) {
-            Log.d("gh","hgh");
             pdia.dismiss();
             sendBarcodeToActivity(codeContent,t);
 

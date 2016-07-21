@@ -205,6 +205,7 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
                 return u.addProd(barcode, prod_name, prod_details, longitude, latitude);
             }
             catch(Exception e){
+                Log.e("AddProdActivity","Attempting to add product in DB", e);//TODO:show a unsuccessful transaction fragment
                 return false; //Please do something nice if possible
             }
         }

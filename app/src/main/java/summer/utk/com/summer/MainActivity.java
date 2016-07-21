@@ -1,15 +1,16 @@
 package summer.utk.com.summer;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -67,25 +68,8 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
 
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
 
-        utility u =new utility();
-        try {
-            u.init(getApplicationContext());
-        }
-        catch (Exception e){
-            Toast.makeText(getApplicationContext(),"No Internet Connection! \n The App will now Exit",Toast.LENGTH_SHORT).show();
-            //this.finish();
-            Runnable r = new Runnable() {
-                @Override
-                public void run(){
+        initializeBaasbox();
 
-                    System.exit(0); //<-- put your code in here.
-                }
-            };
-
-            Handler h = new Handler();
-            h.postDelayed(r, 3000);
-
-        }
 
         frag = new ScanFragment();
         fragTrans = getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag);
@@ -160,6 +144,36 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
             frag = new ScanFragment();
             toolbar.setTitle(TITLE_SCAN);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag).commit();
+        }
+    }
+
+    private void initializeBaasbox() {
+        utility u =new utility();
+        try {
+            u.init(getApplicationContext());
+        }
+        catch (Exception e){
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("No network connctivity")
+                    .setMessage("The Application can't connect to internet.")
+                    .setPositiveButton("Try Again!", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // continue with delete
+                            initializeBaasbox();
+                        }
+                    })
+                    .setNegativeButton("Exit ", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
         }
     }
 

@@ -18,27 +18,29 @@ import java.util.concurrent.ExecutionException;
 public class utility {
 
     private BaasBox client;
-    boolean flag;
-    boolean loginFlag=false;
-    boolean signUpFlag=false;
+    private boolean flag;
+    private boolean loginFlag=false;
+    private boolean signUpFlag=false;
     static String Username="",Pwd="";
     static BaasUser user;
-    boolean result=false;
+    private boolean result=false;
     static String prodName="",prodDetails="";
+    private Context context;
 
     boolean executor=false;
     boolean errorFlag=false;
     //Call this in onCreate method of the very first activity of the app
-    public void init(Context appContext) throws Exception{
+    public void init(Context context) throws Exception{
+        this.context = context;
         ConnectivityManager connectivityManager
-                = (ConnectivityManager) appContext.getSystemService(appContext.CONNECTIVITY_SERVICE);
+                = (ConnectivityManager) context.getSystemService(context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if(activeNetworkInfo == null || !activeNetworkInfo.isConnected())
         {
             throw new Exception();
         }
         BaasBox.Builder b =
-                new BaasBox.Builder(appContext);
+                new BaasBox.Builder(context);
         client = b.setApiDomain("40.121.94.107")
                 .setAppCode("1234567890")
                 .init();
@@ -175,7 +177,7 @@ public class utility {
         return signUpFlag;
     }
 
-    public void login(String U,String P)throws Exception
+    public boolean login(String U,String P)throws Exception
     {
         loginFlag=false;
         errorFlag=false;
@@ -205,6 +207,7 @@ public class utility {
             throw new Exception();
         }
 
+        return loginFlag;
 
     }
 

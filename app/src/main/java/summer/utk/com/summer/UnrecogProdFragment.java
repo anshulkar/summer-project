@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.varun.baasbox.utility;
@@ -53,6 +54,7 @@ public class UnrecogProdFragment extends Fragment {
 
 
         prod_names = new ArrayList<>();
+        prod_names.add("No products found");
 
         FetchData fetchdata = new FetchData();
         fetchdata.execute();
@@ -124,10 +126,13 @@ public class UnrecogProdFragment extends Fragment {
             //prod_names = u.getAllProdNames(); This cant be done as this changes reference of prod_names causing the adapter to lose the reference.
             prod_names.addAll(u.getAllProdNames());
             Log.d("unrecProd",""+prod_names.size());
+            if(prod_names.size()==0)return false;
+            else prod_names.remove(0);
             return true;
         }
 
         protected void onPostExecute(Boolean t) {
+            if(!t)Toast.makeText(getActivity(),"Network unreachable or Internal server Error",Toast.LENGTH_LONG).show();
             mAdapter.notifyDataSetChanged();
             pdia.dismiss();
         }

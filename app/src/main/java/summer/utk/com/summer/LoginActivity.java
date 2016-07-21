@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.TextInputEditText;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -92,8 +93,13 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... str) {
 
             utility u = new utility();
-            //return u.login(entered_username,entered_password);//TODO: implement this method
-            return true;
+            try {
+                return u.login(entered_username,entered_password);
+            } catch (Exception e) {
+                Log.e("LoginActivity", "Trying to login", e);
+                return false;
+            }
+
         }
 
         protected void onPostExecute(Boolean t) {
