@@ -160,7 +160,12 @@ public class ScanFragment extends Fragment{
         @Override
         protected Boolean doInBackground(String... str) {
             utility u = new utility();
-            return u.checkProduct(codeContent);
+            try {
+                return u.checkProduct(codeContent);
+            }
+            catch(Exception e){
+                return false;//Please do something nice if possible
+            }
         }
 
         protected void onPostExecute(Boolean t) {

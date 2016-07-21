@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -67,7 +68,24 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
 
         utility u =new utility();
-        u.init(getApplicationContext());
+        try {
+            u.init(getApplicationContext());
+        }
+        catch (Exception e){
+            Toast.makeText(getApplicationContext(),"No Internet Connection! \n The App will now Exit",Toast.LENGTH_SHORT).show();
+            //this.finish();
+            Runnable r = new Runnable() {
+                @Override
+                public void run(){
+
+                    System.exit(0); //<-- put your code in here.
+                }
+            };
+
+            Handler h = new Handler();
+            h.postDelayed(r, 3000);
+
+        }
 
         frag = new ScanFragment();
         fragTrans = getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag);

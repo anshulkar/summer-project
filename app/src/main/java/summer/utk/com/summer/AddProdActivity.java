@@ -201,7 +201,12 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
         @Override
         protected Boolean doInBackground(String... str) {
             utility u = new utility();
-            return u.addProd(barcode,prod_name,prod_details,longitude,latitude);
+            try {
+                return u.addProd(barcode, prod_name, prod_details, longitude, latitude);
+            }
+            catch(Exception e){
+                return false; //Please do something nice if possible
+            }
         }
 
         protected void onPostExecute(Boolean t) {
