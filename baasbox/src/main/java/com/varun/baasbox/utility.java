@@ -22,6 +22,9 @@ public class utility {
     static BaasUser user;
     static boolean result=false;
     static String prodName="",prodDetails="";
+
+    boolean executor=false;
+
     //Call this in onCreate method of the very first activity of the app
     public void init(Context appContext){
         BaasBox.Builder b =
@@ -30,6 +33,7 @@ public class utility {
                 .setAppCode("1234567890")
                 .init();
         login("admin","admin");
+
         Log.d("Init Method","Called");
     }
 
@@ -51,6 +55,7 @@ public class utility {
                     //JsonObject obj=res.value();
                     List<JsonObject> objlist=res.value();
                     if(objlist.size()>0) {
+                        result=true;
                         JsonObject obj = objlist.get(0);
                         prodName=obj.getString("Product_Name");
                         prodDetails=obj.getString("Product_Details");
@@ -62,17 +67,22 @@ public class utility {
                     }
 
                     Log.d("Product Check","No. of items "+objlist.size());
-
+                    executor=true;
                 }
                 else {
                     result=false;
                     Log.d("Product Check","Error:: "+res.value().toString());
-
+                    executor=true;
                 }
 
 
             }
         });
+
+//        while(!executor){
+//
+//        }
+        executor=false;
         return result;
     }
 
@@ -84,6 +94,7 @@ public class utility {
 
         BaasDocument doc = new BaasDocument("sample");
 
+
         doc.put("Barcode",barcode).put("Product_Name",name).put("Product_Details",details).put("Latitude",latitude).put("Longitude",longitude);
         Log.d("Insert Function",doc.toJson().toString());
         doc.save(new BaasHandler<BaasDocument>() {
@@ -92,10 +103,12 @@ public class utility {
                 if(res.isSuccess()) {
                     Log.d("Insert Function","Reached here");
                     flag=true;
+                    executor=true;
                 } else {
                     try {
                         Log.d("Insert Function",res.get().toString());
                         flag=false;
+                        executor=true;
                     } catch (BaasException e) {
                         e.printStackTrace();
                     }
@@ -103,6 +116,11 @@ public class utility {
                 }
             }
         });
+
+        while(!executor){
+
+        }
+        executor=false;
         return flag;
 
     }
@@ -165,8 +183,24 @@ public class utility {
 
     public ArrayList<String> getAllProdNames(){
         /**Fetch list of all names of products in DB*/
-        ArrayList<String> str_arr = new ArrayList<>();
-        str_arr.add("prod_1_name");
+        final ArrayList<String> str_arr = new ArrayList<>();
+
+        BaasDocument.fetchAll("sample",
+                new BaasHandler<List<BaasDocument>>() {
+                    @Override
+                    public void handle(BaasResult<List<BaasDocument>> res) {
+
+                        if (res.isSuccess()) {
+                            for (BaasDocument doc:res.value()) {
+                                str_arr.add(doc.getString("Product_Name"));
+                                Log.d("LOG","Doc: "+doc.getString("Product_Name"));
+                            }
+                        } else {
+                            Log.e("LOG","Error",res.error());
+                        }
+                    }
+                });
+
         return str_arr;
     }
 }
