@@ -44,7 +44,13 @@ public class utility {
         client = b.setApiDomain("40.121.94.107")
                 .setAppCode("1234567890")
                 .init();
-        login("admin","admin");
+        Thread t=new Thread(){
+          public void run(){
+              try{login("admin","admin");}
+              catch (Exception e){}
+          }
+        };
+        t.start();
 
         Log.d("Init Method","Called");
     }
@@ -181,6 +187,7 @@ public class utility {
     {
         loginFlag=false;
         errorFlag=false;
+        executor=false;
         Username=U;
         Pwd=P;
         BaasUser user = BaasUser.withUserName(U)
@@ -206,6 +213,8 @@ public class utility {
         if(errorFlag){
             throw new Exception();
         }
+        while (!executor){}
+        executor=false;
 
         return loginFlag;
 
