@@ -29,9 +29,9 @@ public class UnrecogProdFragment extends Fragment {
     private MaterialSearchView searchView;
     private RecyclerView recyclerView;
     private StringsDataAdapter mAdapter;
-    private ArrayList<String> prod_names;
+    private ArrayList<String> prod_names,shownList;
     private ProgressDialog pdia;
-    String[] search_suggestions;
+    private boolean searchViewSubmitPressed=false;/**It is a temporary workaround so that when submit is called at the end querytextchange doesnt clear the list*/
 
     public UnrecogProdFragment() {
         // Required empty public constructor
@@ -48,38 +48,47 @@ public class UnrecogProdFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_unrecog_prod, container, false);
         searchView = (MaterialSearchView) ((AppCompatActivity)getActivity()).findViewById(R.id.search_view);
-        searchView.showSearch();
+        /*searchView.showSearch();
+        searchView.clearFocus();*/
         searchView.setVoiceSearch(false);
 
 
 
+        shownList = new ArrayList<>();
         prod_names = new ArrayList<>();
-        prod_names.add("No products found");
+        shownList.add("No products found");
 
         FetchData fetchdata = new FetchData();
         fetchdata.execute();
         recyclerView = (RecyclerView) view.findViewById(R.id.unrecogProdRecyclerView);
-        mAdapter = new StringsDataAdapter(prod_names);
+        mAdapter = new StringsDataAdapter(shownList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-        /*search_suggestions = prod_names.toArray(new String[0]);*///TODO:implement search suggestions
-        //searchView.setSuggestions(search_suggestions);
+
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //Do some magic
+                searchViewSubmitPressed=true;
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-
-                String[] words = new String[10];
-
-
+            public boolean onQueryTextChange(String query) {
+                if(!searchViewSubmitPressed) {
+                    shownList.clear();
+                    //Log.d("change", query);
+                    if (query == null || query.equals("") || query.isEmpty()) shownList.addAll(prod_names);
+                    /**search algo*/
+                    else for (String str : prod_names) if (str.contains(query)) shownList.add(str);
+                    /**search algo end*/
+                    //Log.d("change", shownList.size() + "");
+                    if(shownList.size()==0)shownList.add("NO SEARCH RESULTS");
+                    mAdapter.notifyDataSetChanged();
+                }
+                else searchViewSubmitPressed=false;
                 return false;
             }
         });
@@ -87,7 +96,9 @@ public class UnrecogProdFragment extends Fragment {
         searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-                //Do some magic
+                shownList.clear();
+                shownList.addAll(prod_names);
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -126,13 +137,16 @@ public class UnrecogProdFragment extends Fragment {
             //prod_names = u.getAllProdNames(); This cant be done as this changes reference of prod_names causing the adapter to lose the reference.
             prod_names.addAll(u.getAllProdNames());
             Log.d("unrecProd",""+prod_names.size());
-            if(prod_names.size()==0)return false;
-            else prod_names.remove(0);
-            return true;
+            return prod_names.size()!=0;
         }
 
         protected void onPostExecute(Boolean t) {
             if(!t)Toast.makeText(getActivity(),"Network unreachable or Internal server Error",Toast.LENGTH_LONG).show();
+            else {
+                shownList.clear();
+                shownList.addAll(prod_names);
+                searchView.setSuggestions(prod_names.toArray(new String[0]));
+            }
             mAdapter.notifyDataSetChanged();
             pdia.dismiss();
         }
