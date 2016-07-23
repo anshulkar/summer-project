@@ -145,6 +145,8 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
 
     private void stopLocation() {
         SmartLocation.with(AddProdActivity.this).location().stop();
+        SmartLocation.with(AddProdActivity.this).geocoding().stop();
+        provider.stop();
     }
 
     private void showLocation(Location location) {

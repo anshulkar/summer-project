@@ -193,6 +193,8 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
 
     private void stopLocation() {
         SmartLocation.with(MainActivity.this).location().stop();
+        SmartLocation.with(MainActivity.this).geocoding().stop();
+        provider.stop();
     }
 
     private void showLocation(Location location) {
