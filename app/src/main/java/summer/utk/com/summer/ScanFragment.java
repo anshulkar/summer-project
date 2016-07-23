@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -29,7 +28,6 @@ public class ScanFragment extends Fragment{
 
 
     private String codeFormat,codeContent;
-    private TextView formatTxt, contentTxt,locationTxt;
     private ImageView scanButton;
     private OnBarcodeScanResultListener mListener;
     private ProgressDialog pdia;
@@ -44,9 +42,6 @@ public class ScanFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_scan, container, false);
-        formatTxt = (TextView)view.findViewById(R.id.scan_format);
-        contentTxt = (TextView)view.findViewById(R.id.scan_content);
-        locationTxt = (TextView) view.findViewById(R.id.location_text);
 
         scanButton = (ImageView)view.findViewById(R.id.scan_button);
         scanButton.setOnClickListener(new View.OnClickListener() {
@@ -132,8 +127,6 @@ public class ScanFragment extends Fragment{
             codeFormat = scanningResult.getFormatName();
 
 // display it on screen
-            formatTxt.setText("FORMAT: " + codeFormat);
-            contentTxt.setText("CONTENT: " + codeContent);
             HandleScan handlescanresults = new HandleScan();
             handlescanresults.execute();//the gui cant get updated when the async task is running
 

@@ -53,9 +53,6 @@ public class AddProdActivity extends AppCompatActivity implements AddProdContent
             @Override
             public void onClick(View view) {
 
-                /*AddProdContentFragment prodContentFragment = (AddProdContentFragment)
-                        getSupportFragmentManager().findFragmentById(R.id.add_prod_activity_fragment);*/
-
                 if (frag instanceof AddProdContentFragment) {
                     if(!((AddProdContentFragment)frag).submitButtonPressed()){
                         Snackbar.make(view, "Please provide required data", Snackbar.LENGTH_SHORT)

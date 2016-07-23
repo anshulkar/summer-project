@@ -21,9 +21,6 @@ import com.varun.baasbox.utility;
 import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class UnrecogProdFragment extends Fragment {
 
     private MaterialSearchView searchView;
