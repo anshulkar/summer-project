@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
 
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
 
-        initializeBaasbox();
+        new initializeBaasbox().execute();
 
 
         frag = new ScanFragment();
@@ -144,36 +146,6 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
             frag = new ScanFragment();
             toolbar.setTitle(TITLE_SCAN);
             getSupportFragmentManager().beginTransaction().replace(R.id.main_activity_fragment,frag).commit();
-        }
-    }
-
-    private void initializeBaasbox() {
-        utility u =new utility();
-        try {
-            u.init(getApplicationContext());
-        }
-        catch (Exception e){
-            new AlertDialog.Builder(MainActivity.this)
-                    .setTitle("No network connctivity")
-                    .setMessage("The Application can't connect to internet.")
-                    .setPositiveButton("Try Again!", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // continue with delete
-                            initializeBaasbox();
-                        }
-                    })
-                    .setNegativeButton("Exit ", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                            Intent intent = new Intent();
-                            intent.setAction(Intent.ACTION_MAIN);
-                            intent.addCategory(Intent.CATEGORY_HOME);
-                            startActivity(intent);
-                            finish();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
         }
     }
 
@@ -283,6 +255,56 @@ public class MainActivity extends AppCompatActivity implements ScanFragment.OnBa
             }
 
         }
+
+    }
+
+    private class initializeBaasbox extends AsyncTask<String,Void,Boolean> {
+
+        //three methods get called, first preExecute, then do in background, and once do
+        //in back ground is completed, the onPost execute method will be called.//TODO:incorporate on progresssdialog cancelled method in all asynctask
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... str) {
+            utility u =new utility();
+            boolean initsuccess=true;
+            try {
+                u.init(getApplicationContext());
+            }
+            catch (Exception e){
+                initsuccess=false;
+            }
+            return initsuccess;
+        }
+
+        protected void onPostExecute(Boolean t) {
+            if(!t)new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("No network connctivity")
+                    .setMessage("The Application can't connect to internet.")
+                    .setPositiveButton("Try Again!", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // continue with delete
+                            new initializeBaasbox().execute();
+                        }
+                    })
+                    .setNegativeButton("Exit ", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                            Intent intent = new Intent();
+                            intent.setAction(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            startActivity(intent);
+                            finish();
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+
 
     }
 }
